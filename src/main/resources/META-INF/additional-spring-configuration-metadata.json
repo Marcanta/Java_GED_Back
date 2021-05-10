@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "file.image-dir",
+      "type": "java.lang.String",
+      "description": "Description for file.image-dir."
+  }
+] }
