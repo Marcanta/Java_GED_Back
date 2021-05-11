@@ -1,57 +1,44 @@
-package com.marcanta.ged.models;
+package com.marcanta.ged.dtos;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import com.marcanta.ged.models.Image;
+import org.springframework.beans.factory.annotation.Value;
+
 import java.util.Date;
+import java.util.Optional;
 
-@Entity
-@Table(name="IMAGE")
-public class Image implements Serializable {
+public class ImageGetDto {
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    public static final String BASE_URL = "http://localhost:8080/api";
+
     private Long id;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "path")
-    private String path;
-
-    @Column(name = "date")
     private Date date;
 
-    @Column(name = "published")
     private boolean published;
 
-    @Column(name = "category")
     private String category;
 
-    @Column(name = "objects")
     private String objects;
 
-    @Column(name = "nb_persons")
     private int nbPersons;
 
-    @Column(name = "achived")
-    private boolean archived;
+    private String imageUrl;
 
-    public Image(String name, String description, String path, boolean published, String category, String objects, int nbPersons) {
+    public ImageGetDto(Long id, String name, String description, Date date, boolean published, String category, String objects, int nbPersons, String imageUrl) {
+        this.id = id;
         this.name = name;
         this.description = description;
-        this.path = path;
-        this.date = new Date();
+        this.date = date;
         this.published = published;
         this.category = category;
         this.objects = objects;
         this.nbPersons = nbPersons;
-        this.archived = false;
+        this.imageUrl = imageUrl;
     }
-
-    public Image() {}
 
     public Long getId() {
         return id;
@@ -75,14 +62,6 @@ public class Image implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
     }
 
     public Date getDate() {
@@ -125,11 +104,15 @@ public class Image implements Serializable {
         this.nbPersons = nbPersons;
     }
 
-    public boolean isArchived() {
-        return archived;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
-    public void setArchived(boolean archived) {
-        this.archived = archived;
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public static ImageGetDto fromImage(Image image) {
+        return new ImageGetDto(image.getId(), image.getName(), image.getDescription(), image.getDate(), image.isPublished(), image.getCategory(), image.getObjects(), image.getNbPersons(), ImageGetDto.BASE_URL + "/images/" + image.getId() + "/view");
     }
 }
