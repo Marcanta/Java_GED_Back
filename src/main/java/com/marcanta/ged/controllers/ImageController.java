@@ -36,8 +36,8 @@ public class ImageController {
         return this.imageRepository.findAll().stream().filter(image -> !image.isArchived()).map(ImageGetDto::fromImage).collect(Collectors.toList());
     }
 
-    @PostMapping
-    public ResponseEntity<Object> imageUpload(@RequestParam("file")MultipartFile sourceImageFile) throws IOException {
+    @PostMapping()
+    public ResponseEntity<Object> imageUpload(@RequestParam(value = "name")String name, @RequestParam(value = "category")String category, @RequestParam(value = "description")String description, @RequestParam(value = "file")MultipartFile sourceImageFile) throws IOException {
         String path = IMAGE_FILE_DIRECTORY + sourceImageFile.getOriginalFilename();
         File destImageFile = new File(path);
         destImageFile.createNewFile();
@@ -45,7 +45,7 @@ public class ImageController {
         fos.write(sourceImageFile.getBytes());
         fos.close();
 
-        Image image = new Image(sourceImageFile.getOriginalFilename(), "une image de toto", path, true, "person", "", 1 );
+        Image image = new Image(name, description, path, true, category, "", 1 );
         return new ResponseEntity<Object>(this.imageRepository.save(image), HttpStatus.OK);
     }
 
