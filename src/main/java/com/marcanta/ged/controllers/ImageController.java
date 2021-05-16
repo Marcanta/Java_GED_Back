@@ -2,21 +2,22 @@ package com.marcanta.ged.controllers;
 
 import com.marcanta.ged.dtos.ImageGetDto;
 import com.marcanta.ged.models.Image;
+import com.marcanta.ged.models.Response;
 import com.marcanta.ged.repositories.ImageRepository;
 import jdk.jfr.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.net.URI;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -36,8 +37,8 @@ public class ImageController {
         return this.imageRepository.findAll().stream().filter(image -> !image.isArchived()).map(ImageGetDto::fromImage).collect(Collectors.toList());
     }
 
-    @PostMapping()
-    public ResponseEntity<Object> imageUpload(@RequestParam(value = "name")String name, @RequestParam(value = "category")String category, @RequestParam(value = "description")String description, @RequestParam(value = "file")MultipartFile sourceImageFile) throws IOException {
+    @PostMapping
+    public ResponseEntity<Object> imageUpload(@RequestParam String name, @RequestParam String category, @RequestParam String description, @RequestParam(value = "file")MultipartFile sourceImageFile, @RequestParam int persons, @RequestParam String objects, @RequestParam boolean published) throws IOException {
         String path = IMAGE_FILE_DIRECTORY + sourceImageFile.getOriginalFilename();
         File destImageFile = new File(path);
         destImageFile.createNewFile();
@@ -45,7 +46,7 @@ public class ImageController {
         fos.write(sourceImageFile.getBytes());
         fos.close();
 
-        Image image = new Image(name, description, path, true, category, "", 1 );
+        Image image = new Image(name, description, path, published, category, objects, persons );
         return new ResponseEntity<Object>(this.imageRepository.save(image), HttpStatus.OK);
     }
 
